@@ -1,0 +1,124 @@
+<Layouts.app flash={@flash}>
+  <div class="h-screen flex flex-col" id="chat-room" phx-hook="ChatRoom" data-room-id={@room.id}>
+    <%!-- Header --%>
+    <div class="navbar bg-base-200 px-4">
+      <div class="flex-1">
+        <.link navigate={~p"/chat"} class="btn btn-ghost btn-sm">
+          <.icon name="hero-arrow-left" class="w-5 h-5" />
+        </.link>
+        <h1 class="text-xl font-bold ml-4"><%= @room.name %></h1>
+      </div>
+      <div class="flex-none">
+        <button class="btn btn-ghost btn-sm" phx-click="leave_room">
+          <.icon name="hero-arrow-right-on-rectangle" class="w-5 h-5" />
+          나가기
+        </button>
+      </div>
+    </div>
+
+    <div class="flex-1 flex overflow-hidden">
+      <%!-- Main Chat Area --%>
+      <div class="flex-1 flex flex-col bg-base-100">
+        <%!-- Messages --%>
+        <div id="messages" class="flex-1 overflow-y-auto p-4" phx-update="stream">
+          <div :for={{id, message} <- @streams.messages} id={id} class="mb-4">
+            <%= if message.type == :system do %>
+              <div class="text-center text-sm text-base-content/50 italic">
+                <%= message.content %>
+              </div>
+            <% else %>
+              <div class="flex items-start gap-3">
+                <div class="avatar placeholder">
+                  <div 
+                    class="bg-primary text-primary-content rounded-full w-10"
+                    style={"background-color: #{message.participant.color}"}
+                  >
+                    <span class="text-xl">
+                      <%= String.first(message.participant.nickname) %>
+                    </span>
+                  </div>
+                </div>
+                <div class="flex-1">
+                  <div class="flex items-baseline gap-2 mb-1">
+                    <span class="font-semibold text-sm">
+                      <%= message.participant.nickname %>
+                    </span>
+                    <span class="text-xs text-base-content/50">
+                      <%= Calendar.strftime(message.inserted_at, "%H:%M") %>
+                    </span>
+                  </div>
+                  <div class="prose prose-sm max-w-none">
+                    <%= message.content %>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+
+        <%!-- Typing Indicator --%>
+        <%= if map_size(@typing_users) > 0 do %>
+          <div class="px-4 py-2 text-sm text-base-content/60">
+            <%= Enum.join(Map.values(@typing_users), ", ") %>님이 입력 중...
+          </div>
+        <% end %>
+
+        <%!-- Message Input --%>
+        <%= if @current_participant do %>
+          <.form
+            for={@message_form}
+            id="message-form"
+            phx-submit="send_message"
+            class="border-t border-base-200 p-4"
+          >
+            <div class="flex gap-2">
+              <input
+                type="text"
+                name="message[content]"
+                value={@message_form.params["content"]}
+                class="input input-bordered flex-1"
+                placeholder="메시지를 입력하세요..."
+                phx-keyup="typing"
+                phx-debounce="1000"
+                autocomplete="off"
+              />
+              <button type="submit" class="btn btn-primary">
+                <.icon name="hero-paper-airplane" class="w-5 h-5" />
+              </button>
+            </div>
+          </.form>
+        <% end %>
+      </div>
+
+      <%!-- Sidebar - Participants --%>
+      <div class="w-64 bg-base-200 border-l border-base-300 p-4">
+        <h3 class="font-bold mb-4 flex items-center gap-2">
+          <.icon name="hero-users" class="w-5 h-5" />
+          참여자 (<%= Enum.count(@streams.participants) %>)
+        </h3>
+        <div id="participants" phx-update="stream" class="space-y-2">
+          <div :for={{id, participant} <- @streams.participants} id={id} class="flex items-center gap-2">
+            <div class="avatar placeholder">
+              <div 
+                class="bg-primary text-primary-content rounded-full w-8"
+                style={"background-color: #{participant.color}"}
+              >
+                <span class="text-sm">
+                  <%= String.first(participant.nickname) %>
+                </span>
+              </div>
+            </div>
+            <span class="text-sm flex-1">
+              <%= participant.nickname %>
+              <%= if @current_participant && participant.id == @current_participant.id do %>
+                <span class="text-xs text-base-content/50">(나)</span>
+              <% end %>
+            </span>
+            <div class="w-2 h-2 bg-success rounded-full"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</Layouts.app>

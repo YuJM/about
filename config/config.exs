@@ -59,7 +59,7 @@ config :spark,
 config :about,
   ecto_repos: [About.Repo],
   generators: [timestamp_type: :utc_datetime],
-  ash_domains: [About.Accounts]
+  ash_domains: [About.Accounts, About.Chat]
 
 # Configures the endpoint
 config :about, AboutWeb.Endpoint,
