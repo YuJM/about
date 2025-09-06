@@ -45,6 +45,11 @@ defmodule AboutWeb.Router do
     get "/", PageController, :home
     auth_routes AuthController, About.Accounts.User, path: "/auth"
     sign_out_route AuthController
+    
+    # Chat routes
+    live "/chat", ChatLive.Index, :index
+    live "/chat/new", ChatLive.Index, :new
+    live "/chat/:id", ChatLive.Room, :show
 
     # Remove these if you'd like to use your own authentication views
     sign_in_route register_path: "/register",

@@ -1,0 +1,119 @@
+<Layouts.app flash={@flash}>
+  <div class="container mx-auto px-4 py-8">
+    <div class="max-w-6xl mx-auto">
+      <%!-- Header --%>
+      <div class="flex justify-between items-center mb-8">
+        <div>
+          <h1 class="text-3xl font-bold text-base-content">채팅방 목록</h1>
+          <p class="text-base-content/70 mt-1">참여할 채팅방을 선택하세요</p>
+        </div>
+        <.link
+          patch={~p"/chat/new"}
+          class="btn btn-primary"
+        >
+          <.icon name="hero-plus" class="w-5 h-5 mr-2" />
+          새 채팅방 만들기
+        </.link>
+      </div>
+
+      <%!-- Room Grid --%>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <%= for room <- @rooms do %>
+          <.link
+            navigate={~p"/chat/#{room.id}"}
+            class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow cursor-pointer"
+          >
+            <div class="card-body">
+              <h2 class="card-title text-primary">
+                <.icon name="hero-chat-bubble-left-right" class="w-6 h-6" />
+                <%= room.name %>
+              </h2>
+              <p class="text-base-content/70">
+                <%= room.description || "채팅방에 참여하여 대화를 시작하세요" %>
+              </p>
+              <div class="card-actions justify-between items-center mt-4">
+                <div class="flex items-center gap-2 text-sm text-base-content/60">
+                  <.icon name="hero-users" class="w-4 h-4" />
+                  <span>최대 <%= room.max_participants %>명</span>
+                </div>
+                <div class="badge badge-primary badge-outline">
+                  <%= if room.is_public, do: "공개", else: "비공개" %>
+                </div>
+              </div>
+            </div>
+          </.link>
+        <% end %>
+
+        <%= if @rooms == [] do %>
+          <div class="col-span-full text-center py-12">
+            <.icon name="hero-chat-bubble-left-right" class="w-16 h-16 mx-auto text-base-content/30 mb-4" />
+            <p class="text-lg text-base-content/60">아직 생성된 채팅방이 없습니다.</p>
+            <p class="text-base-content/50 mt-2">첫 번째 채팅방을 만들어보세요!</p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <%!-- Create Room Modal --%>
+  <%= if @show_modal do %>
+    <div class="modal modal-open">
+      <div class="modal-box">
+        <h3 class="font-bold text-lg mb-4">새 채팅방 만들기</h3>
+        
+        <.form
+          for={@form}
+          id="room-form"
+          phx-submit="create_room"
+        >
+          <div class="form-control w-full mb-4">
+            <label class="label">
+              <span class="label-text">채팅방 이름</span>
+            </label>
+            <input
+              type="text"
+              name="room[name]"
+              class="input input-bordered w-full"
+              placeholder="예: 일반 채팅방"
+              required
+            />
+          </div>
+
+          <div class="form-control w-full mb-4">
+            <label class="label">
+              <span class="label-text">설명 (선택)</span>
+            </label>
+            <textarea
+              name="room[description]"
+              class="textarea textarea-bordered"
+              placeholder="채팅방 설명을 입력하세요"
+              rows="3"
+            ></textarea>
+          </div>
+
+          <div class="form-control w-full mb-6">
+            <label class="label cursor-pointer">
+              <span class="label-text">공개 채팅방</span>
+              <input
+                type="checkbox"
+                name="room[is_public]"
+                class="checkbox checkbox-primary"
+                checked
+              />
+            </label>
+          </div>
+
+          <div class="modal-action">
+            <button type="button" class="btn" phx-click="close_modal">
+              취소
+            </button>
+            <button type="submit" class="btn btn-primary">
+              생성
+            </button>
+          </div>
+        </.form>
+      </div>
+      <div class="modal-backdrop" phx-click="close_modal"></div>
+    </div>
+  <% end %>
+</Layouts.app>
