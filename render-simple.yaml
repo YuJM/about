@@ -1,0 +1,34 @@
+services:
+  # 메인 웹 애플리케이션 (최소 설정)
+  - type: web
+    name: about-web
+    env: elixir
+    region: singapore
+    plan: starter
+    buildCommand: |
+      mix deps.get --only prod
+      MIX_ENV=prod mix compile
+      MIX_ENV=prod mix assets.deploy
+      MIX_ENV=prod mix release
+    startCommand: _build/prod/rel/about/bin/server
+    envVars:
+      - key: MIX_ENV
+        value: prod
+      - key: PORT
+        value: 10000
+      - key: PHX_HOST
+        value: ${RENDER_EXTERNAL_URL}
+      - key: SECRET_KEY_BASE
+        generateValue: true
+      - key: TOKEN_SIGNING_SECRET
+        generateValue: true
+      - key: DATABASE_PATH
+        value: /opt/render/project/src/data/about.db
+      - key: POOL_SIZE
+        value: "5"
+      - key: PHX_SERVER
+        value: "true"
+    disk:
+      name: about-data
+      mountPath: /opt/render/project/src/data
+      sizeGB: 1

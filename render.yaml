@@ -1,0 +1,85 @@
+services:
+  # 메인 웹 애플리케이션
+  - type: web
+    name: about-web
+    env: elixir
+    region: singapore
+    plan: starter
+    buildCommand: |
+      mix deps.get --only prod
+      MIX_ENV=prod mix compile
+      MIX_ENV=prod mix assets.deploy
+      MIX_ENV=prod mix release
+    startCommand: _build/prod/rel/about/bin/server
+    envVars:
+      - key: MIX_ENV
+        value: prod
+      - key: PORT
+        value: 10000
+      - key: PHX_HOST
+        value: ${RENDER_EXTERNAL_URL}
+      - key: SECRET_KEY_BASE
+        generateValue: true
+      - key: TOKEN_SIGNING_SECRET
+        generateValue: true
+      - key: DATABASE_PATH
+        value: /opt/render/project/src/data/about.db
+      - key: POOL_SIZE
+        value: "5"
+      - key: PHX_SERVER
+        value: "true"
+    disk:
+      name: about-data
+      mountPath: /opt/render/project/src/data
+      sizeGB: 1
+
+  # PostgreSQL 데이터베이스 (선택사항 - SQLite 대신 사용하려면)
+  - type: pserv
+    name: about-db
+    env: postgresql
+    region: singapore
+    plan: starter
+    disk:
+      name: about-postgres
+      mountPath: /var/lib/postgresql/data
+      sizeGB: 1
+
+  # Redis (선택사항 - 캐싱용)
+  - type: redis
+    name: about-redis
+    region: singapore
+    plan: starter
+    maxmemoryPolicy: allkeys-lru
+
+  # Cron Job (선택사항 - 정기 작업용)
+  - type: cron
+    name: about-cron
+    env: elixir
+    region: singapore
+    plan: starter
+    schedule: "0 2 * * *"
+    buildCommand: |
+      mix deps.get --only prod
+      MIX_ENV=prod mix compile
+      MIX_ENV=prod mix release
+    startCommand: |
+      _build/prod/rel/about/bin/about eval "About.Release.migrate()"
+    envVars:
+      - key: MIX_ENV
+        value: prod
+      - key: DATABASE_PATH
+        value: /opt/render/project/src/data/about.db
+      - key: SECRET_KEY_BASE
+        fromService:
+          type: web
+          name: about-web
+          property: envVars.SECRET_KEY_BASE
+      - key: TOKEN_SIGNING_SECRET
+        fromService:
+          type: web
+          name: about-web
+          property: envVars.TOKEN_SIGNING_SECRET
+    disk:
+      name: about-cron-data
+      mountPath: /opt/render/project/src/data
+      sizeGB: 1
