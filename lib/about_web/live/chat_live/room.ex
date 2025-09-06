@@ -11,7 +11,7 @@ defmodule AboutWeb.ChatLive.Room do
       {:ok, room} ->
         if connected?(socket) do
           PubSub.subscribe(About.PubSub, "room:#{room_id}")
-          # send(self(), :load_messages)
+          send(self(), :load_messages)
         end
         
         {:ok,
@@ -38,13 +38,8 @@ defmodule AboutWeb.ChatLive.Room do
   def handle_info(:load_messages, socket) do
     room_id = socket.assigns.room.id
     
-    # Load recent messages
-    messages = About.Chat.Message
-      |> Ash.Query.filter(room_id: room_id)
-      |> Ash.Query.sort(inserted_at: :asc)
-      |> Ash.Query.limit(100)
-      |> Ash.Query.load(:participant)
-      |> Ash.read!(domain: About.Chat)
+    # Load recent messages using our new function
+    {:ok, messages} = About.Chat.Message.list_by_room(room_id)
     
     # Load participants
     participants = About.Chat.Participant

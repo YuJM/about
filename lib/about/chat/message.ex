@@ -25,7 +25,7 @@ defmodule About.Chat.Message do
     end
 
     attribute :type, :atom do
-      constraints one_of: [:text, :system, :join, :leave]
+      constraints one_of: [:text, :system, :join, :leave, :user]
       default :text
     end
 
@@ -52,20 +52,19 @@ defmodule About.Chat.Message do
     defaults [:read, :destroy]
 
     create :send do
-      accept [:content, :type]
+      accept [:content, :room_id, :participant_id]
       
-      argument :room_id, :uuid do
-        allow_nil? false
+      validate present(:content) do
+        message "메시지 내용을 입력해주세요"
       end
       
-      argument :participant_id, :uuid do
-        allow_nil? false
+      validate match(:content, ~r/\S/) do
+        message "공백만으로는 메시지를 보낼 수 없습니다"
       end
-
+      
       change fn changeset, _ ->
         changeset
-        |> Ash.Changeset.manage_relationship(:room, {:id, changeset.arguments.room_id}, type: :append)
-        |> Ash.Changeset.manage_relationship(:participant, {:id, changeset.arguments.participant_id}, type: :append)
+        |> Ash.Changeset.change_attribute(:type, :user)
       end
     end
 
@@ -101,9 +100,8 @@ defmodule About.Chat.Message do
       
       prepare fn query, _ ->
         query
-        |> Ash.Query.sort(inserted_at: :desc)
-        |> Ash.Query.limit({:arg, :limit})
-        |> Ash.Query.load(participant: [:user])
+        |> Ash.Query.sort(inserted_at: :asc)
+        |> Ash.Query.load(:participant)
       end
     end
   end
@@ -113,5 +111,6 @@ defmodule About.Chat.Message do
     define :edit
     define :soft_delete
     define :recent_messages
+    define :list_by_room, args: [:room_id], action: :recent_messages
   end
 end
