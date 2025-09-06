@@ -6,6 +6,13 @@
         <div>
           <h1 class="text-3xl font-bold text-base-content">채팅방 목록</h1>
           <p class="text-base-content/70 mt-1">참여할 채팅방을 선택하세요</p>
+          <%= if @nickname do %>
+            <div class="flex items-center gap-2 mt-2">
+              <span class="text-sm text-base-content/60">현재 닉네임:</span>
+              <span class="badge badge-secondary"><%= @nickname %></span>
+              <button class="btn btn-xs btn-ghost" phx-click="change_nickname">변경</button>
+            </div>
+          <% end %>
         </div>
         <.link
           patch={~p"/chat/new"}
@@ -114,6 +121,44 @@
         </.form>
       </div>
       <div class="modal-backdrop" phx-click="close_modal"></div>
+    </div>
+  <% end %>
+
+  <%!-- Nickname Modal --%>
+  <%= if @show_nickname_modal do %>
+    <div class="modal modal-open">
+      <div class="modal-box">
+        <h3 class="font-bold text-lg mb-4">닉네임 설정</h3>
+        <p class="text-base-content/70 mb-4">채팅방에 참여하려면 닉네임을 설정해주세요.</p>
+        
+        <.form
+          for={@nickname_form}
+          id="nickname-form"
+          phx-submit="set_nickname"
+          phx-hook="ChatNickname"
+        >
+          <div class="form-control w-full mb-6">
+            <label class="label">
+              <span class="label-text">닉네임</span>
+            </label>
+            <input
+              type="text"
+              name="nickname[nickname]"
+              value={@nickname_form[:nickname].value}
+              class="input input-bordered w-full"
+              placeholder="닉네임을 입력하세요"
+              required
+              maxlength="20"
+            />
+          </div>
+
+          <div class="modal-action">
+            <button type="submit" class="btn btn-primary">
+              설정
+            </button>
+          </div>
+        </.form>
+      </div>
     </div>
   <% end %>
 </Layouts.app>

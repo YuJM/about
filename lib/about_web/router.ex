@@ -47,6 +47,7 @@ defmodule AboutWeb.Router do
     sign_out_route AuthController
     
     # Chat routes
+    get "/chat/set_nickname", ChatController, :set_nickname
     live "/chat", ChatLive.Index, :index
     live "/chat/new", ChatLive.Index, :new
     live "/chat/:id", ChatLive.Room, :show

@@ -22,8 +22,11 @@ defmodule About.Application do
       # Start to serve requests, typically the last entry
       {DNSCluster, query: Application.get_env(:about, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: About.PubSub},
+      {AboutWeb.ChatPresence, pubsub_server: About.PubSub},
       AboutWeb.Endpoint,
-      {AshAuthentication.Supervisor, [otp_app: :about]}
+      {AshAuthentication.Supervisor, [otp_app: :about]},
+      # Chat initializer to set all participants offline on startup
+      About.Chat.Initializer
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

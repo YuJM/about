@@ -7,8 +7,8 @@
       "source": "id",
       "references": null,
       "allow_nil?": false,
-      "primary_key?": true,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": true
     },
     {
       "default": "nil",
@@ -17,8 +17,8 @@
       "source": "content",
       "references": null,
       "allow_nil?": false,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -27,8 +27,8 @@
       "source": "type",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -37,8 +37,8 @@
       "source": "edited_at",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -47,8 +47,8 @@
       "source": "is_deleted",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -57,8 +57,8 @@
       "source": "inserted_at",
       "references": null,
       "allow_nil?": false,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -67,8 +67,8 @@
       "source": "updated_at",
       "references": null,
       "allow_nil?": false,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -92,8 +92,8 @@
         "destination_attribute_generated": null
       },
       "allow_nil?": false,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -117,12 +117,12 @@
         "destination_attribute_generated": null
       },
       "allow_nil?": false,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     }
   ],
   "table": "chat_messages",
-  "hash": "FEB7906477B21B1A6B2862BA750CE816BFF78ED79E6EC115F695DB135A1F2DCE",
+  "hash": "EFB35DD7AEBD673CB2D6EC434BA1872A2A3EB4356B1AB3164A5171CB559DDB31",
   "repo": "Elixir.About.Repo",
   "multitenancy": {
     "global": null,
@@ -131,8 +131,8 @@
   },
   "identities": [],
   "strict?": false,
-  "custom_indexes": [],
   "base_filter": null,
+  "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true
 }

@@ -26,10 +26,117 @@ import {hooks as colocatedHooks} from "phoenix-colocated/about"
 import topbar from "../vendor/topbar"
 
 const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
+// 채팅방 세션 관리를 위한 Hook
+const ChatRoomHooks = {
+  ChatRoom: {
+    mounted() {
+      // 저장된 참여자 정보 로드
+      const roomId = this.el.dataset.roomId
+      const storedParticipantId = sessionStorage.getItem(`participant_${roomId}`)
+      
+      if (storedParticipantId) {
+        this.pushEvent("restore_participant", {
+          room_id: roomId,
+          participant_id: storedParticipantId
+        })
+      }
+      
+      // 참여자 정보 저장 이벤트 리스너
+      this.handleEvent("save_participant", ({room_id, participant_id}) => {
+        sessionStorage.setItem(`participant_${room_id}`, participant_id)
+      })
+      
+      // 참여자 정보 삭제 이벤트 리스너
+      this.handleEvent("clear_participant", ({room_id}) => {
+        sessionStorage.removeItem(`participant_${room_id}`)
+      })
+      
+      // 닉네임 변경 시 세션 업데이트
+      this.handleEvent("update_session_nickname", ({nickname, session_id}) => {
+        // Ajax 요청으로 서버 세션 업데이트
+        fetch('/chat/set_nickname?' + new URLSearchParams({
+          nickname: nickname,
+          session_id: session_id
+        }), {
+          method: 'GET',
+          headers: {
+            'X-CSRF-Token': document.querySelector("meta[name='csrf-token']").getAttribute("content")
+          }
+        }).then(() => {
+          // 로컬 스토리지도 업데이트
+          sessionStorage.setItem('chat_nickname', nickname)
+        })
+      })
+      
+      // 뒤로가기/앞으로가기 감지 (popstate)
+      const handlePopState = () => {
+        this.pushEvent("leave_room", {})
+      }
+      
+      // LiveView 페이지 네비게이션 감지
+      const handlePageLoading = () => {
+        this.pushEvent("leave_room", {})
+      }
+      
+      // 브라우저 종료 감지
+      const handleBeforeUnload = () => {
+        this.pushEvent("leave_room", {})
+      }
+      
+      // 이벤트 리스너 등록
+      window.addEventListener("popstate", handlePopState)
+      window.addEventListener("beforeunload", handleBeforeUnload)
+      this.handleEvent("phx:page-loading-start", handlePageLoading)
+      
+      // cleanup 함수 저장
+      this._cleanup = () => {
+        window.removeEventListener("popstate", handlePopState)
+        window.removeEventListener("beforeunload", handleBeforeUnload)
+      }
+    },
+    
+    destroyed() {
+      // 이벤트 리스너 정리
+      if (this._cleanup) {
+        this._cleanup()
+      }
+    }
+  },
+  
+  ChatNickname: {
+    mounted() {
+      // 세션 ID 생성 또는 가져오기
+      let sessionId = sessionStorage.getItem('chat_session_id')
+      if (!sessionId) {
+        sessionId = crypto.randomUUID ? crypto.randomUUID() : 
+                   'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                     const r = Math.random() * 16 | 0
+                     const v = c == 'x' ? r : (r & 0x3 | 0x8)
+                     return v.toString(16)
+                   })
+        sessionStorage.setItem('chat_session_id', sessionId)
+      }
+      
+      // 세션 ID를 서버에 전송
+      this.pushEvent("set_session_id", {session_id: sessionId})
+      
+      // 닉네임 저장 이벤트 리스너
+      this.handleEvent("save_nickname", ({nickname}) => {
+        sessionStorage.setItem('chat_nickname', nickname)
+      })
+      
+      // 닉네임 삭제 이벤트 리스너
+      this.handleEvent("clear_nickname", () => {
+        sessionStorage.removeItem('chat_nickname')
+      })
+    }
+  }
+}
+
 const liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: 2500,
   params: {_csrf_token: csrfToken},
-  hooks: {...colocatedHooks},
+  hooks: {...colocatedHooks, ...ChatRoomHooks},
 })
 
 // Show progress bar on live navigation and form submits

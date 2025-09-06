@@ -1,5 +1,5 @@
 <Layouts.app flash={@flash}>
-  <div class="h-screen flex flex-col">
+  <div class="h-screen flex flex-col" id="chat-room" phx-hook="ChatRoom" data-room-id={@room.id}>
     <%!-- Header --%>
     <div class="navbar bg-base-200 px-4">
       <div class="flex-1">
@@ -121,42 +121,4 @@
     </div>
   </div>
 
-  <%!-- Join Modal --%>
-  <%= if @show_join_modal do %>
-    <div class="modal modal-open">
-      <div class="modal-box">
-        <h3 class="font-bold text-lg mb-4">채팅방 입장</h3>
-        
-        <.form
-          for={@nickname_form}
-          id="join-form"
-          phx-submit="join_room"
-        >
-          <div class="form-control w-full mb-6">
-            <label class="label">
-              <span class="label-text">닉네임을 입력하세요</span>
-            </label>
-            <input
-              type="text"
-              name="participant[nickname]"
-              class="input input-bordered w-full"
-              placeholder="예: 홍길동"
-              required
-              maxlength="50"
-              autofocus
-            />
-          </div>
-
-          <div class="modal-action">
-            <.link navigate={~p"/chat"} class="btn">
-              취소
-            </.link>
-            <button type="submit" class="btn btn-primary">
-              입장
-            </button>
-          </div>
-        </.form>
-      </div>
-    </div>
-  <% end %>
 </Layouts.app>

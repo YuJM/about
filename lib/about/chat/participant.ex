@@ -2,7 +2,8 @@ defmodule About.Chat.Participant do
   use Ash.Resource,
     domain: About.Chat,
     data_layer: AshSqlite.DataLayer,
-    extensions: [AshAdmin.Resource]
+    extensions: [AshAdmin.Resource],
+    notifiers: [Ash.Notifier.PubSub]
 
   sqlite do
     table "chat_participants"
@@ -14,6 +15,15 @@ defmodule About.Chat.Participant do
     create_actions [:create]
     update_actions [:update]
     destroy_actions [:destroy]
+  end
+
+  pub_sub do
+    module AboutWeb.Endpoint
+    prefix "participant"
+    
+    publish :join_room, ["joined", :room_id]
+    publish :change_nickname, ["nickname_changed", :room_id, :id]
+    publish :destroy, ["left", :room_id]
   end
 
   attributes do
@@ -28,11 +38,8 @@ defmodule About.Chat.Participant do
       default "#" <> :crypto.strong_rand_bytes(3) |> Base.encode16()
     end
 
-    attribute :is_online, :boolean do
-      default true
-    end
-
-    attribute :last_seen_at, :utc_datetime_usec do
+    # 영속적 참여 기록만 유지 (실시간 상태는 제거)
+    attribute :joined_at, :utc_datetime_usec do
       default &DateTime.utc_now/0
     end
 
@@ -60,41 +67,17 @@ defmodule About.Chat.Participant do
       accept [:nickname, :room_id, :user_id]
     end
 
-    update :update_status do
-      accept [:is_online, :last_seen_at]
-    end
-
     update :change_nickname do
       accept [:nickname]
     end
 
-    action :leave_room, :boolean do
-      argument :participant_id, :uuid do
-        allow_nil? false
-      end
-
-      run fn input, _ ->
-        case About.Chat.Participant.get(input.arguments.participant_id) do
-          {:ok, participant} ->
-            participant
-            |> Ash.Changeset.for_update(:update_status, %{
-              is_online: false,
-              last_seen_at: DateTime.utc_now()
-            })
-            |> About.Chat.update()
-            
-            {:ok, true}
-            
-          _ ->
-            {:ok, false}
-        end
-      end
-    end
+    # 실시간 상태 관련 액션들 제거
+    # - update_status 제거
+    # - leave_room 제거 (Presence가 자동 처리)
   end
 
   code_interface do
     define :join_room
-    define :leave_room
-    define :update_status
+    define :change_nickname
   end
 end

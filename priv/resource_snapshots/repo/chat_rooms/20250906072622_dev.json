@@ -7,8 +7,8 @@
       "source": "id",
       "references": null,
       "allow_nil?": false,
-      "primary_key?": true,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": true
     },
     {
       "default": "nil",
@@ -17,8 +17,8 @@
       "source": "name",
       "references": null,
       "allow_nil?": false,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -27,8 +27,8 @@
       "source": "description",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -37,8 +37,8 @@
       "source": "is_public",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -47,8 +47,8 @@
       "source": "max_participants",
       "references": null,
       "allow_nil?": true,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -57,8 +57,8 @@
       "source": "inserted_at",
       "references": null,
       "allow_nil?": false,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     },
     {
       "default": "nil",
@@ -67,12 +67,12 @@
       "source": "updated_at",
       "references": null,
       "allow_nil?": false,
-      "primary_key?": false,
-      "generated?": false
+      "generated?": false,
+      "primary_key?": false
     }
   ],
   "table": "chat_rooms",
-  "hash": "BA03BA3D8C5F8B1D8DA2EE68866CF6B225A85E4D11A3AACB33E1B96800462048",
+  "hash": "17522A30A61FBE05EE3731D1631D53709B4054CF61A59334720F44D9A835A012",
   "repo": "Elixir.About.Repo",
   "multitenancy": {
     "global": null,
@@ -81,8 +81,8 @@
   },
   "identities": [],
   "strict?": false,
-  "custom_indexes": [],
   "base_filter": null,
+  "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true
 }
