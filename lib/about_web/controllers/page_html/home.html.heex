@@ -11,26 +11,22 @@
               </div>
             </div>
           </div>
-          
+
           <h1 class="text-5xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-6">
             실시간 채팅 서비스
           </h1>
-          
+
           <p class="text-xl mb-8 text-base-content/80">
-            친구들과 실시간으로 대화하고, 새로운 사람들을 만나보세요.
-            <br />
-            간단하고 빠른 채팅 경험을 제공합니다.
+            친구들과 실시간으로 대화하고, 새로운 사람들을 만나보세요. <br /> 간단하고 빠른 채팅 경험을 제공합니다.
           </p>
-          
+
           <div class="flex gap-4 justify-center">
             <.link navigate={~p"/chat"} class="btn btn-primary btn-lg">
-              <.icon name="hero-chat-bubble-left-right" class="w-6 h-6" />
-              채팅 시작하기
+              <.icon name="hero-chat-bubble-left-right" class="w-6 h-6" /> 채팅 시작하기
             </.link>
-            
+
             <.link navigate={~p"/chat/new"} class="btn btn-secondary btn-lg">
-              <.icon name="hero-plus-circle" class="w-6 h-6" />
-              채팅방 만들기
+              <.icon name="hero-plus-circle" class="w-6 h-6" /> 채팅방 만들기
             </.link>
           </div>
         </div>
@@ -40,7 +36,7 @@
     <%!-- Features Section --%>
     <div class="py-16">
       <h2 class="text-3xl font-bold text-center mb-12">주요 기능</h2>
-      
+
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
         <%!-- Feature 1 --%>
         <div class="card bg-base-100 shadow-xl">
@@ -93,7 +89,7 @@
         <div class="stat-value text-primary">0</div>
         <div class="stat-desc">새로운 채팅방을 만들어보세요</div>
       </div>
-      
+
       <div class="stat">
         <div class="stat-figure text-secondary">
           <.icon name="hero-user-group" class="w-8 h-8" />
@@ -102,7 +98,7 @@
         <div class="stat-value text-secondary">0</div>
         <div class="stat-desc">첫 번째 사용자가 되어보세요</div>
       </div>
-      
+
       <div class="stat">
         <div class="stat-figure text-accent">
           <.icon name="hero-envelope" class="w-8 h-8" />
@@ -122,8 +118,7 @@
             닉네임만 입력하면 바로 채팅을 시작할 수 있습니다.
           </p>
           <.link navigate={~p"/chat"} class="btn btn-primary btn-lg">
-            <.icon name="hero-rocket-launch" class="w-6 h-6" />
-            채팅방 둘러보기
+            <.icon name="hero-rocket-launch" class="w-6 h-6" /> 채팅방 둘러보기
           </.link>
         </div>
       </div>
@@ -131,7 +126,7 @@
 
     <%!-- Tech Stack --%>
     <div class="divider my-16">기술 스택</div>
-    
+
     <div class="flex flex-wrap justify-center gap-4 mb-16">
       <div class="badge badge-lg badge-outline">Phoenix LiveView</div>
       <div class="badge badge-lg badge-outline">Ash Framework</div>
@@ -145,7 +140,7 @@
     <footer class="footer footer-center p-10 text-base-content/60">
       <div>
         <p class="font-bold">
-          Phoenix Framework v<%= Application.spec(:phoenix, :vsn) %> + Ash Framework
+          Phoenix Framework v{Application.spec(:phoenix, :vsn)} + Ash Framework
         </p>
         <p>© 2024 실시간 채팅 서비스 - MVP Demo</p>
       </div>

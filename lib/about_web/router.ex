@@ -45,7 +45,7 @@ defmodule AboutWeb.Router do
     get "/", PageController, :home
     auth_routes AuthController, About.Accounts.User, path: "/auth"
     sign_out_route AuthController
-    
+
     # Chat routes
     get "/chat/set_nickname", ChatController, :set_nickname
     live "/chat", ChatLive.Index, :index

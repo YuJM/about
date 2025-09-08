@@ -5,7 +5,7 @@ defmodule AboutWeb.ChatController do
     # URL 디코딩 처리
     decoded_nickname = URI.decode(params["nickname"] || "")
     session_id = params["session_id"] || Ash.UUID.generate()
-    
+
     conn
     |> put_session("chat_nickname", decoded_nickname)
     |> put_session("chat_session_id", session_id)

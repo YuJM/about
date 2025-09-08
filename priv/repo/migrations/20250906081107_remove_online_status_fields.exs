@@ -20,7 +20,7 @@ defmodule About.Repo.Migrations.RemoveOnlineStatusFields do
   def down do
     alter table(:chat_participants) do
       remove :joined_at
-      
+
       # Restore online status fields if rollback is needed
       add :is_online, :boolean
       add :last_seen_at, :utc_datetime_usec

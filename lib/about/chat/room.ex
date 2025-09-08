@@ -16,6 +16,40 @@ defmodule About.Chat.Room do
     destroy_actions [:destroy]
   end
 
+  code_interface do
+    define :get, action: :read, get?: true
+    define :create
+    define :list_public
+    define :get_with_messages
+  end
+
+  actions do
+    defaults [:read, :destroy]
+
+    create :create do
+      accept [:name, :description, :is_public, :max_participants]
+    end
+
+    update :update do
+      accept [:name, :description, :is_public, :max_participants]
+    end
+
+    read :list_public do
+      filter expr(is_public == true)
+    end
+
+    read :get_with_messages do
+      argument :limit, :integer, default: 100
+
+      prepare fn query, _ ->
+        query
+        |> Ash.Query.load(messages: [:participant])
+        |> Ash.Query.limit_relationship(:messages, {:arg, :limit})
+        |> Ash.Query.sort_relationship(:messages, inserted_at: :desc)
+      end
+    end
+  end
+
   attributes do
     uuid_primary_key :id
 
@@ -47,39 +81,5 @@ defmodule About.Chat.Room do
     has_many :participants, About.Chat.Participant do
       destination_attribute :room_id
     end
-  end
-
-  actions do
-    defaults [:read, :destroy]
-
-    create :create do
-      accept [:name, :description, :is_public, :max_participants]
-    end
-
-    update :update do
-      accept [:name, :description, :is_public, :max_participants]
-    end
-
-    read :list_public do
-      filter expr(is_public == true)
-    end
-
-    read :get_with_messages do
-      argument :limit, :integer, default: 100
-      
-      prepare fn query, _ ->
-        query
-        |> Ash.Query.load(messages: [:participant])
-        |> Ash.Query.limit_relationship(:messages, {:arg, :limit})
-        |> Ash.Query.sort_relationship(:messages, inserted_at: :desc)
-      end
-    end
-  end
-
-  code_interface do
-    define :get, action: :read, get?: true
-    define :create
-    define :list_public
-    define :get_with_messages
   end
 end
